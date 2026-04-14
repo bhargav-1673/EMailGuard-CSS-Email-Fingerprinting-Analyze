@@ -1,0 +1,73 @@
+Delivered-To: jahnavipathi530@gmail.com
+Received: by 2002:a05:6402:34d:b0:66e:76d:9145 with SMTP id r13csp125756edw;
+        Fri, 3 Apr 2026 04:13:36 -0700 (PDT)
+X-Received: by 2002:a05:6214:6111:b0:89c:e1ae:683b with SMTP id 6a1803df08f44-8a7021c5552mr30168056d6.1.1775214816291;
+        Fri, 03 Apr 2026 04:13:36 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775214816; cv=none;
+        d=google.com; s=arc-20240605;
+        b=bsSUbof5Sp3sTcAN3YHFUvAA86BWafFwnsFoQ9yLpefrlopusH3p/AatXimbT74bnz
+         NCDBMQOhMIso4qhGpZMSFOvpGgaZ3HHASmnGCjmqXb0Oms8CmNV46+bNzRsaDWGycIa1
+         SxXyL/yAeFFotVuNC9d5YEe/+UYH9fuMXBuToZoxhoNW0CIU78EIze/HAhQmF9+g7OHR
+         Nx8RDxR3aG74xc5gfUBLq9PlNa7pDGxyriLsaDaDPcULpL9adijBd2hCFSx/bkotKo8y
+         gzyvcDAMW3MUYKGGfflUBpB4f99egY+YbicJET340QxfvsW3CzX62WDNhqPBRtLxsFCa
+         LPzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:mime-version:subject:message-id:to:from
+         :date:dkim-signature;
+        bh=/c7q1uRzS0CXxIyyag1KFq1u+gvJfPcK6ezQuwA7504=;
+        fh=04c70ZyA4BWN617Af7/RCfpeWSMd8fs6ZYCkSyqzu7s=;
+        b=PrfKBQ70luHGfHCFfoN1IIMNFu3M+zlmoKQMUhfwCeD/qTvHAexdaL/1kAGa7a9xXI
+         tiPnN/3YdxyaSJkrd2YyfrrZL6p+KQmv8Wv3N2CnkqK7ZcgNeZrG0igvTbHIJqPFUO49
+         ph0TwdAaEpBa7+Q8GmVu7zYAUQpayM7qeUZK3b+TxS/o0dHeJ2vW28IZps+1Av1vQw6A
+         RRsfZkYBAApahfyqQlYOmZhLFQhK3I29trOE4uEHwhWjw9Kc61bMv4KFexoxpKiBzAQm
+         hex5xNSVMO6dbheYFkvzZVb1G0zSdJ6RgWql97xHC3T1ONGyUVjIit/gz5dJkB9JiN6+
+         mhVw==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@github.com header.s=pf2023 header.b=hXJ5mzlY;
+       spf=pass (google.com: domain of noreply@github.com designates 192.30.252.203 as permitted sender) smtp.mailfrom=noreply@github.com;
+       dmarc=pass (p=QUARANTINE sp=REJECT dis=NONE) header.from=github.com
+Return-Path: <noreply@github.com>
+Received: from out-20.smtp.github.com (out-20.smtp.github.com. [192.30.252.203])
+        by mx.google.com with ESMTPS id 6a1803df08f44-8a597ec2d7fsi65274106d6.369.2026.04.03.04.13.36
+        for <jahnavipathi530@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 Apr 2026 04:13:36 -0700 (PDT)
+Received-SPF: pass (google.com: domain of noreply@github.com designates 192.30.252.203 as permitted sender) client-ip=192.30.252.203;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@github.com header.s=pf2023 header.b=hXJ5mzlY;
+       spf=pass (google.com: domain of noreply@github.com designates 192.30.252.203 as permitted sender) smtp.mailfrom=noreply@github.com;
+       dmarc=pass (p=QUARANTINE sp=REJECT dis=NONE) header.from=github.com
+Received: from github.com (hubbernetes-node-681bfa4.va3-iad.github.net [10.51.93.21])
+	by smtp.github.com (Postfix) with ESMTPA id EF0E61C0A1E
+	for <jahnavipathi530@gmail.com>; Fri,  3 Apr 2026 04:13:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=github.com;
+	s=pf2023; t=1775214816;
+	bh=/c7q1uRzS0CXxIyyag1KFq1u+gvJfPcK6ezQuwA7504=;
+	h=Date:From:To:Subject:From;
+	b=hXJ5mzlYr/M85vK1SwZt77gOAOezl24a+C2IOeFBjbHvD+rGWDcZJFKER5YqQCV9H
+	 Mj5kMowcIMfLtvBkP/HEqfgmL9p4fs3wXjNS8/ViVe7RDNqfiwVT+uC3UBODW/FJIZ
+	 qJHuHVRVHxfpDDqPVb32C5/y5pPI/+Zawn6h89Rs=
+Date: Fri, 03 Apr 2026 04:13:35 -0700
+From: GitHub <noreply@github.com>
+To: Jahnavi <jahnavipathi530@gmail.com>
+Message-ID: <69cfa0dfed2c5_f911089967f@sharedworker-8449d88464-kbkhv.mail>
+Subject: [GitHub] A personal access token (classic) has been added to your
+ account
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Auto-Response-Suppress: All
+
+Hey Jahnavi-915!
+
+A personal access token (classic) "git-access" with repo scope was recently added to your account. Visit https://github.com/settings/tokens for more information.
+
+To see this and other security events for your account, visit https://github.com/settings/security-log
+
+If you run into problems, please contact support by visiting https://github.com/contact
+
+Thanks,
+The GitHub Team
+

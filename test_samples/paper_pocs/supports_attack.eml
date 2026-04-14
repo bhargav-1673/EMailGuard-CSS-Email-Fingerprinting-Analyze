@@ -1,0 +1,14 @@
+Subject: Supports Attack
+From: attacker@test.com
+Content-Type: text/html
+
+<html>
+<style>
+@supports (display: flex) {
+  div {
+    background-image: url("http://evil.com/support");
+  }
+}
+</style>
+<body>Test</body>
+</html>

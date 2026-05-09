@@ -1,5 +1,32 @@
+# Virtual environment
 venv/
+env/
+ENV/
+
+# Python cache
 __pycache__/
 *.pyc
-.pytest_cache/test_samples/inbox_emails/
-test_samples/inbox_emails/
+*.pyo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Generated files
+temp_*.eml
+temp_report.html
+report.html
+architecture.png
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store

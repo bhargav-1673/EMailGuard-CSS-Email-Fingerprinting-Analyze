@@ -17,8 +17,8 @@
   - [🧠 How It Works](#-how-it-works)
   - [📄 Research Basis](#-research-basis)
   - [👥 Team \& Roles](#-team--roles)
-    - [👤 Member A – Pipeline \& Core Logic](#-member-a--pipeline--core-logic)
-    - [👤 Member B – Detection \& Output](#-member-b--detection--output)
+    - [👤 J V M Bhargav (2023UCP1673) – Pipeline \& Core Logic](#-j-v-m-bhargav-2023ucp1673--pipeline--core-logic)
+    - [👤 Pathi Jahnavi (2023UCP1595) – Detection \& Output](#-pathi-jahnavi-2023ucp1595--detection--output)
     - [🤝 Shared Responsibilities](#-shared-responsibilities)
   - [🛠 Installation](#-installation)
   - [🚀 Usage](#-usage)
@@ -27,7 +27,6 @@
   - [📂 Dataset](#-dataset)
   - [🏗 Architecture](#-architecture)
   - [🧪 Testing \& Evaluation](#-testing--evaluation)
-  - [🌍 Deployment](#-deployment)
   - [🔮 Future Work](#-future-work)
   - [🙏 Acknowledgments](#-acknowledgments)
   - [📄 License](#-license)
@@ -48,7 +47,6 @@
 - **Command‑Line Interface (CLI)** – process single `.eml` files, output JSON or HTML
 - **Web Interface** – upload `.eml` via Flask, view/download rich HTML report
 - **Offline & Safe** – never fetches external resources or executes JavaScript
-- **Live Demo** – [https://emailguard.onrender.com](https://emailguard.onrender.com) *(example – replace with your URL)*
 
 ---
 
@@ -91,14 +89,14 @@ We used the **official NDSS 2025 artifact** only for test `.eml` files (email Po
 
 ## 👥 Team & Roles
 
-### 👤 Member A – Pipeline & Core Logic
+### 👤 J V M Bhargav (2023UCP1673) – Pipeline & Core Logic
 - `.eml` parser & CSS extractor
 - Detectors: `@import`, `@media`, `@container`
 - Correlation engine
 - CLI interface
 - Integration & deployment (Render)
 
-### 👤 Member B – Detection & Output
+### 👤 Pathi Jahnavi (2023UCP1595) – Detection & Output
 - Detectors: `calc()`, `@font-face`, `@supports`
 - Risk scoring
 - Flask web app backend
@@ -134,7 +132,7 @@ lxml>=4.9
 jinja2>=3.1
 flask>=2.3
 pytest>=7.4
-tinycss2>=1.2   # optional, for advanced CSS parsing
+tinycss2>=1.2
 ```
 
 ---
@@ -173,23 +171,23 @@ Report saved to report.html
 ### Web Interface (Flask)
 
 ```bash
-python app.py
+python web/app.py
 # Open http://127.0.0.1:5000 in your browser
 ```
 
-Upload an `.eml` file, and you’ll get a detailed HTML report with expandable CSS snippets, correlation insights, and mitigation advice.
+Upload an `.eml` file, and you'll get a detailed HTML report with expandable CSS snippets, correlation insights, and mitigation advice.
 
 ---
 
 ## 📂 Dataset
 
-We evaluated EMailGuard on a curated dataset of **15–20 emails** across three categories:
+We evaluated EMailGuard on a curated dataset of **23 emails** across three categories:
 
 | Category | Count | Source |
 |----------|-------|--------|
-| Paper PoCs | 4–5 | Official NDSS 2025 artifact (`pocs/email/`) |
-| Synthetic attacks | 5–8 | Created by modifying PoCs (nested `@media`, obfuscated `calc()`, multiple `@import`, inline‑only CSS, malformed CSS) |
-| Clean emails | 5–10 | Exported newsletters (no CSS fingerprinting) |
+| Paper PoCs | 6 | Official NDSS 2025 artifact (`pocs/email/`) |
+| Synthetic attacks | 7 | Created by modifying PoCs (nested `@media`, obfuscated `calc()`, multiple `@import`, inline‑only CSS, malformed CSS) |
+| Clean emails | 10 | Exported newsletters (no CSS fingerprinting) |
 
 All test emails are in the `test_samples/` folder of this repository.
 
@@ -197,40 +195,14 @@ All test emails are in the `test_samples/` folder of this repository.
 
 ## 🏗 Architecture
 
-```
-┌─────────────┐
-│   .eml file │
-└──────┬──────┘
-       ▼
-┌─────────────────┐
-│ eml_parser      │
-│ (MIME → HTML)   │
-└──────┬──────────┘
-       ▼
-┌─────────────────┐
-│ css_extractor   │
-│ (<style>, inline│
-│  @import, link) │
-└──────┬──────────┘
-       ▼
-┌─────────────────────────────────────┐
-│           6 Detectors               │
-│ (Member A: 3  │  Member B: 3)      │
-└──────┬──────────────────────────────┘
-       ▼
-┌─────────────────┐
-│ correlation     │  (rule‑based)
-└──────┬──────────┘
-       ▼
-┌─────────────────┐
-│ risk scorer     │  (weights + boosts)
-└──────┬──────────┘
-       ▼
-┌─────────────────────────────────────┐
-│ Output: CLI text / HTML report /   │
-│ Flask UI (upload, display)         │
-└─────────────────────────────────────┘
-```
+![EMailGuard Architecture](architecture.png)
+
+The pipeline flows as follows:
+1. `.eml file` → `eml_parser.py` → `css_extractor.py`
+2. CSS snippets fed in parallel to all **6 detectors**
+3. Each detector returns `Finding` patterns → `correlation_engine.py`
+4. Correlation boost → `risk_scoring.py` → `html_reporter.py`
+5. Output via **CLI** (`main.py`), **Flask Web App**, or standalone **HTML Report**
 
 ---
 
@@ -248,26 +220,16 @@ pytest tests/
 - False‑positive measurement on clean emails
 
 **Evaluation metrics (from our runs):**
-- Paper PoCs detection rate: **100%**
-- Synthetic attacks detection rate: **~85%** (some obfuscated patterns may be missed)
-- False positive rate on clean emails: **< 10%**
-- Average processing time: **< 1.5 seconds per email** (on i7‑1255U)
 
-*Detailed results are in the [project report](report.pdf).*
+| Metric | Result |
+|--------|--------|
+| Paper PoCs detection rate | **100%** (6/6) |
+| Synthetic attacks detection rate | **85.7%** (6/7) |
+| False positive rate on clean emails | **0%** (0/10) |
+| Average processing time | **1.2s** (range: 0.8–2.0s, on i7‑1255U) |
 
----
+*Detailed results and per-detector accuracy are in the [project report](report.pdf).*
 
-## 🌍 Deployment
-
-The Flask app is deployed on **Render** (free tier).  
-Live demo: [https://emailguard.onrender.com](https://emailguard.onrender.com) *(replace with your actual URL)*
-
-**Deployment steps (for your own instance):**
-1. Push code to GitHub.
-2. Create a new Web Service on Render, connect the repo.
-3. Set start command: `gunicorn app:app`.
-4. Add environment variables if needed (none required).
-5. Your app will be available at `your-app.onrender.com`.
 
 ---
 
@@ -284,7 +246,7 @@ Live demo: [https://emailguard.onrender.com](https://emailguard.onrender.com) *(
 ## 🙏 Acknowledgments
 
 - The authors of *Cascading Spy Sheets* for their groundbreaking research and publicly available artifact.
-- Our course instructors and evaluators for guidance and feedback.
+- Dr. Ramesh Babu Bathula for guidance and feedback throughout the project.
 
 ---
 
@@ -294,4 +256,4 @@ This project is licensed under the MIT License – see the [LICENSE](LICENSE) fi
 
 ---
 
-*Built with ❤️ by Jagabathuni V M Bhargav & Pathi Jahnavi for the Computer and Network Security course.*
+*Built with ❤️ by J V M Bhargav & Pathi Jahnavi for the Computer and Network Security course (22CST352), MNIT Jaipur.*

@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 from jinja2 import Template
 from models import Finding
 
-# HTML template using inline styles (self-contained)
+# HTML template using inline styles (self-contained) with download button
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html>
@@ -21,7 +21,9 @@ HTML_TEMPLATE = """
         .risk-Moderate { background-color: #f39c12; color: white; }
         .risk-High { background-color: #e67e22; color: white; }
         .risk-Critical { background-color: #e74c3c; color: white; }
-        .score-box { font-size: 24px; margin: 10px 0; }
+        .score-box { font-size: 18px; margin: 10px 0; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .download-btn { background-color: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
+        .download-btn:hover { background-color: #2980b9; }
         table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
         th { background-color: #f2f2f2; }
@@ -29,6 +31,21 @@ HTML_TEMPLATE = """
         .correlation-item { background-color: #e8f4f8; padding: 8px; margin: 5px 0; border-left: 4px solid #3498db; }
         footer { margin-top: 30px; font-size: 12px; color: #7f8c8d; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }
     </style>
+    <script>
+        function downloadReport() {
+            // Get the entire HTML content of the current page
+            const htmlContent = document.documentElement.outerHTML;
+            const blob = new Blob([htmlContent], {type: 'text/html'});
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.download = 'emailguard_report_{{ metadata.subject[:30] }}.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -46,6 +63,7 @@ HTML_TEMPLATE = """
         <span class="risk-badge risk-{{ risk.label }}">{{ risk.label }}</span>
         Score: {{ risk.score }}/100
         (Base: {{ risk.base_total }} + Boosts: {{ risk.boost_total }})
+        <button class="download-btn" onclick="downloadReport()">📥 Download HTML Report</button>
     </div>
 
     <h2>Correlation Insights</h2>

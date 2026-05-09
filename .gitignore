@@ -17,7 +17,6 @@ htmlcov/
 temp_*.eml
 temp_report.html
 report.html
-architecture.png
 *.log
 
 # IDE

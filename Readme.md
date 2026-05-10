@@ -16,6 +16,13 @@
   - [✨ Features](#-features)
   - [🧠 How It Works](#-how-it-works)
   - [📄 Research Basis](#-research-basis)
+  - [🔬 Novel Contributions (Beyond the Paper)](#-novel-contributions-beyond-the-paper)
+    - [1. 🔗 Correlation Engine — Multi-Stage Attack Detection](#1--correlation-engine--multi-stage-attack-detection)
+    - [2. 📊 Unified Risk Scoring Model](#2--unified-risk-scoring-model)
+    - [3. 🛡️ Defender-Perspective Static Analysis Tool](#3-️-defender-perspective-static-analysis-tool)
+    - [4. 🧪 Synthetic Attack Dataset](#4--synthetic-attack-dataset)
+    - [5. 📄 Actionable HTML Report with Per-Finding Mitigations](#5--actionable-html-report-with-per-finding-mitigations)
+    - [6. 🖥️ Productized CLI + Flask Web Interface](#6-️-productized-cli--flask-web-interface)
   - [👥 Team \& Roles](#-team--roles)
     - [👤 J V M Bhargav (2023UCP1673) – Pipeline \& Core Logic](#-j-v-m-bhargav-2023ucp1673--pipeline--core-logic)
     - [👤 Pathi Jahnavi (2023UCP1595) – Detection \& Output](#-pathi-jahnavi-2023ucp1595--detection--output)
@@ -84,6 +91,72 @@ This project directly implements techniques from:
 | Mitigations | IX‑B |
 
 We used the **official NDSS 2025 artifact** only for test `.eml` files (email PoCs). No code was copied; all detectors are original implementations.
+
+---
+
+## 🔬 Novel Contributions (Beyond the Paper)
+
+The *Cascading Spy Sheets* paper is an **offensive research** work — it demonstrates that CSS fingerprinting attacks exist and are effective. EMailGuard is built on top of that foundation but contributes original work that the paper does not contain, flipping the perspective from attacker to **defender**.
+
+### 1. 🔗 Correlation Engine — Multi-Stage Attack Detection
+
+The paper analyzes each CSS fingerprinting technique **in isolation**. EMailGuard introduces an original **Correlation Engine** (`correlation_engine.py`) that detects when multiple techniques are combined into a coordinated, multi-stage fingerprinting chain.
+
+For example, it detects the progressive profiling pattern `@supports` → `@media` → `calc()`, where the attacker first identifies the browser, then narrows the OS, then leaks the CPU architecture. This correlation-based detection is not present in the paper and is our most significant novel addition.
+
+**Correlation boosts** are added to the risk score when chained patterns are found, distinguishing a casually-risky email from one that appears to be a deliberate, structured fingerprinting attempt.
+
+### 2. 📊 Unified Risk Scoring Model
+
+The paper evaluates fingerprinting accuracy across browser-OS combinations but provides **no unified risk metric** for individual emails. EMailGuard introduces an original **Risk Scoring System** (`risk_scoring.py`) that:
+
+- Assigns weighted **base scores** per technique based on severity (e.g., `@import` chain scores higher than an isolated `@supports` probe).
+- Applies **correlation boosts** from the Correlation Engine when chained patterns are detected.
+- Produces a **normalized 0–100 score** with a four-tier label: **Safe / Moderate / High / Critical**.
+
+This model gives email administrators and security researchers a single, actionable signal rather than a list of raw technique detections.
+
+### 3. 🛡️ Defender-Perspective Static Analysis Tool
+
+The paper's artifact is a set of proof-of-concept attack `.eml` files and browser evaluation scripts. There is **no tool for defenders** to analyze emails they receive. EMailGuard is an entirely original implementation that:
+
+- Runs **fully offline** — no network calls, no CSS rendering, no JavaScript execution.
+- Performs **pure static pattern analysis** against a `.eml` file, making it safe to run on untrusted emails.
+- Maps every finding back to its specific **paper section** (e.g., `Section IV-B`), creating a traceable, research-grade output.
+
+### 4. 🧪 Synthetic Attack Dataset
+
+The paper's artifact includes PoC emails for the techniques it describes. EMailGuard adds **7 original synthetic attack emails** created by modifying and combining those PoCs to cover patterns the paper does not explicitly test:
+
+| Variant | Description |
+|---------|-------------|
+| Nested `@media` | Multiple layers of conditional viewport probing |
+| Obfuscated `calc()` | Trigonometric expressions split across nested expressions |
+| Multiple `@import` | Chained import chains with recursive loading potential |
+| Inline-only CSS | Fingerprinting via `style=""` attributes only (no `<style>` block) |
+| Malformed CSS | Partially broken CSS that still triggers detection |
+| Mixed inline + external | CSS split across `<style>` tags and `<link>` references |
+| Multi-technique chain | Deliberate combination of ≥3 techniques to test the Correlation Engine |
+
+These cover edge cases that any real-world static analyzer must handle, and they drive a separate suite of tests not present in the paper's artifact.
+
+### 5. 📄 Actionable HTML Report with Per-Finding Mitigations
+
+The paper describes two mitigations (unconditional preloading for browsers; email privacy proxy for email clients) in Section IX at a high level. EMailGuard produces a **self-contained HTML report** (via Jinja2) that:
+
+- Surfaces the **exact matched CSS snippet** for each finding with an expandable view.
+- Provides a **per-finding mitigation** drawn from the paper, customized to the specific technique detected (not just a generic summary).
+- Includes a **Correlation Insights** section explaining why chained techniques raise the risk score.
+- Is **fully self-contained** (no external CSS/JS) so it can be safely opened or shared without network access.
+
+### 6. 🖥️ Productized CLI + Flask Web Interface
+
+The paper's artifact is a research prototype intended for reproduction of results. EMailGuard is a **productized tool** with:
+
+- A **CLI** (`main.py`) supporting `--verbose`, `--summary`, and `--output` modes.
+- A **Flask web app** with file upload, in-browser report rendering, and HTML report download.
+- **Deployment on Render**, making it accessible without local installation.
+- Proper **error handling** for malformed MIME, non-UTF-8 encodings, empty CSS bodies, and invalid file types.
 
 ---
 
